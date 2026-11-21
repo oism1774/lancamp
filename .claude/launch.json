@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4321"],
+      "port": 4321
+    },
+    {
+      "name": "reference",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4400", "--directory", "design"],
+      "port": 4400
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+/* Colours and fonts from design/tokens.json */
+:root {
+  --night-1: #0b0c22;
+  --night-2: #111230;
+  --night-3: #18163b;
+  --night-4: #271c44;
+  --ground: #0c0a18;
+  --hills: #1b1840;
+  --pines: #110f26;
+  --violet: #8a7cf2;
+  --ember: #ff8a3d;
+  --glow: #ffc067;
+  --bone: #f2e9dc;
+  --muted: #c9c0dc;
+  --online: #5ee08a;
+  --text-shadow: #1a1238;
+
+  --wood: #6b4226;
+  --wood-2: #5b3a24;
+  --wood-dark: #3a2216;
+
+  --font-display: 'Silkscreen', monospace;
+  --font-body: 'VT323', monospace;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--night-1);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--night-1);
+  color: var(--bone);
+}

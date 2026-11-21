@@ -1,0 +1,117 @@
+---
+/**
+ * The pixel campfire scene: hills, pines, ground, light pool, logs, crew and fire.
+ * Drawn in a 2400 x 440 viewBox with the fire at x = 1200. The page positions and
+ * scales it through the --u custom property (CSS px per scene unit).
+ */
+import {
+  VIEW_W, VIEW_H, GROUND_Y, FIRE_X, COLORS, HILLS, PINE_PROFILE, PINE_JITTER, PINES,
+  GLOW, GLOW_CY, PALETTE, LOGS, PEOPLE, FIRE_FRAMES, FIRE_BASE,
+} from '../data/scene';
+import { rectPath, spritePaths, seeded } from '../lib/pixels';
+
+// Hills: one stepped outline built from the [top, columns] runs.
+let hillX = 0;
+let hills = `M0 ${VIEW_H}`;
+for (const [top, cols] of HILLS) {
+  hills += `V${top}H${(hillX += cols * 4)}`;
+}
+hills += `V${VIEW_H}Z`;
+
+// Pines: one row per 4 units from the tip down to the ground, centred on the trunk.
+const rand = seeded(1774);
+const pines = PINES.map(([cx, top]) => {
+  let d = '';
+  for (let k = 0, y = top; y <= GROUND_Y; k++, y += 4) {
+    const w = PINE_PROFILE[k] + (rand() < PINE_JITTER ? 8 : 0);
+    d += rectPath(cx - w / 2, y, w, 4);
+  }
+  return d;
+}).join('');
+
+const ground = rectPath(0, GROUND_Y, VIEW_W, VIEW_H - GROUND_Y);
+
+const layer = (sprites: (typeof LOGS)[number][]) => {
+  const merged = new Map<string, string>();
+  for (const s of sprites) {
+    for (const [k, d] of spritePaths(s)) merged.set(k, (merged.get(k) ?? '') + d);
+  }
+  return [...merged].map(([k, d]) => ({ fill: PALETTE[k], d }));
+};
+
+const logs = layer(LOGS);
+const people = layer(PEOPLE);
+const flames = FIRE_FRAMES.map((f) => layer([f]));
+const fireBase = layer([FIRE_BASE]);
+---
+
+<svg
+  class="scene"
+  aria-hidden="true"
+  focusable="false"
+  width={VIEW_W}
+  height={VIEW_H}
+  viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+  shape-rendering="crispEdges"
+>
+  <defs>
+    <g id="ridge">
+      <path d={hills} fill={COLORS.hills} />
+      <path d={pines} fill={COLORS.pines} />
+      <path d={ground} fill={COLORS.ground} />
+    </g>
+  </defs>
+  <!-- The ridge repeats on both sides so very wide screens never show an edge. -->
+  <use href="#ridge" x={-VIEW_W} />
+  <use href="#ridge" />
+  <use href="#ridge" x={VIEW_W} />
+
+  {GLOW.map(([rx, ry, opacity]) => (
+    <ellipse cx={FIRE_X} cy={GLOW_CY} rx={rx} ry={ry} fill={COLORS.glow} opacity={opacity} />
+  ))}
+
+  {logs.map((p) => <path d={p.d} fill={p.fill} />)}
+  {people.map((p) => <path d={p.d} fill={p.fill} />)}
+
+  {flames.map((frame, i) => (
+    <g class={i === 0 ? 'flame-a' : 'flame-b'}>
+      {frame.map((p) => <path d={p.d} fill={p.fill} />)}
+    </g>
+  ))}
+  {fireBase.map((p) => <path d={p.d} fill={p.fill} />)}
+</svg>
+
+<style>
+  .scene {
+    position: absolute;
+    display: block;
+    width: calc(var(--u) * 2400);
+    height: calc(var(--u) * 440);
+    /* Let the repeated ridge show past the sides, but cut the light pool at the bottom edge. */
+    overflow: visible;
+    clip-path: inset(0 -100vw);
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+
+  .flame-a {
+    animation: flame-a 0.5s steps(1) infinite;
+  }
+  .flame-b {
+    animation: flame-b 0.5s steps(1) infinite;
+    opacity: 0;
+  }
+
+  @keyframes flame-a {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes flame-b {
+    0%, 49% { opacity: 0; }
+    50%, 100% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flame-a, .flame-b { animation: none; }
+  }
+</style>

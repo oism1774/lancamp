@@ -1,0 +1,10 @@
+Read CLAUDE_CODE_BRIEF.md in this folder and build the site it describes.
+
+Before writing code, read both design references (design-reference-desktop.html and design-reference-mobile.html), tokens.json and the SVGs, then tell me in a few lines how you plan to structure the Astro project. Wait for my OK.
+
+When you build:
+- Move the kit files out of the project root (put the SVGs in public/, and keep the references and brief in a design/ folder that isn't deployed).
+- Match the references closely, on desktop (1440x900) and mobile (390x844). Check widths 360, 390, 768, 860, 1024, 1440 and 2560.
+- Don't create anything in .github/ and don't push. I'm writing the deploy pipeline myself.
+
+You're done when npm run build passes, npm run preview shows the page at /lancamp/, and the README explains how to run and build it. Then give me a short summary of the files you made.

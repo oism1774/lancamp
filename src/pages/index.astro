@@ -1,0 +1,249 @@
+---
+import '@fontsource/silkscreen/700.css';
+import '@fontsource/vt323/400.css';
+import '../styles/global.css';
+import silkscreenUrl from '@fontsource/silkscreen/files/silkscreen-latin-700-normal.woff2?url';
+import vt323Url from '@fontsource/vt323/files/vt323-latin-400-normal.woff2?url';
+
+import Sky from '../components/Sky.astro';
+import CampScene from '../components/CampScene.astro';
+import Sign from '../components/Sign.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const title = 'LANCamp - coming soon';
+const description =
+  'LANCamp is a campfire for your crew: servers, voice and chat in one place. Coming soon.';
+const pageUrl = new URL(base, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0c22" />
+    <link rel="canonical" href={pageUrl} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <link rel="preload" href={silkscreenUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={vt323Url} as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <main class="camp">
+      <Sky />
+      <div class="ground" aria-hidden="true"></div>
+      <CampScene />
+      <div class="sign-spot">
+        <Sign />
+      </div>
+
+      <div class="intro">
+        <p class="tagline">a campfire for your crew</p>
+        <h1 class="wordmark"><span class="lan">LAN</span>Camp</h1>
+        <p class="status"><span class="dot" aria-hidden="true"></span>SERVERS - VOICE - CHAT</p>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style>
+  /*
+   * Layout. --u is CSS px per scene unit (the scene is 2400 x 440 units, fire at 1200).
+   * Desktop (> 860px): scene on the bottom edge, fire at 68%, text in a left column,
+   * sign on the ground left of the fire. Mobile (<= 860px): everything centred.
+   */
+  .camp {
+    /*
+     * Desktop: 1.2 at 1440px wide, down to 0.8 on narrow desktops. Short windows
+     * (or zoomed-in browsers) shrink it further so text + scene fit one screen:
+     * the scene's top 367 units sit under ~330px of text and padding.
+     */
+    --u: max(
+      0.5px,
+      min(clamp(0.8px, calc((100vw - 460px) / 816), 1.2px), calc((100svh - 330px) / 367))
+    );
+    /* Sign scale, 1px at the reference size. */
+    --k: calc(var(--u) / 1.2);
+    /* Fire position: 68% unless that would push the crew off the right edge. */
+    --fire-x: min(68%, calc(100% - var(--u) * 262 - 32px));
+    /* Measured sign width at --k = 1px, used to keep it on screen. */
+    --sign-w: 361;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(
+      180deg,
+      #0b0c22 0% 12.5%,
+      #0e0f29 12.5% 25%,
+      #111230 25% 37.5%,
+      #141436 37.5% 50%,
+      #18163b 50% 62.5%,
+      #1c183f 62.5% 75%,
+      #211a42 75% 87.5%,
+      #271c44 87.5% 100%
+    );
+  }
+
+  .camp :global(.scene) {
+    left: var(--fire-x);
+    bottom: 0;
+    margin-left: calc(var(--u) * -1200);
+  }
+
+  .ground {
+    display: none;
+  }
+
+  .sign-spot {
+    position: absolute;
+    bottom: calc(var(--u) * 50);
+    left: max(
+      calc(var(--fire-x) - var(--u) * 533),
+      calc(var(--k) * var(--sign-w) / 2 + 16px)
+    );
+    transform: translateX(-50%);
+  }
+
+  .intro {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 20px;
+    padding: clamp(32px, 13svh, 120px) 24px calc(var(--u) * 367) clamp(24px, 9vw, 160px);
+    text-align: left;
+  }
+
+  .tagline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: clamp(24px, 2.4vw, 32px);
+    letter-spacing: 4px;
+    color: var(--muted);
+  }
+
+  .wordmark {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(56px, min(10vw, 17svh), 150px);
+    line-height: 1;
+    color: var(--bone);
+    text-shadow: 6px 6px 0 var(--text-shadow);
+  }
+  .lan {
+    color: var(--ember);
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 4px;
+    color: var(--muted);
+  }
+  .dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    background: var(--online);
+  }
+
+  @media (max-width: 860px) {
+    .camp {
+      --u: 0.7px;
+      /* Scene top: fire near the vertical middle, sign clear of the bottom ~100px. */
+      --scene-top: max(160px, min(calc(50% - 172px), calc(100% - 594px)));
+
+      display: block;
+      height: 100vh;
+      height: 100svh;
+      min-height: 700px;
+    }
+
+    .camp :global(.sky) {
+      --sky-h: calc(var(--scene-top) + var(--u) * 256);
+    }
+
+    .camp :global(.scene) {
+      left: 50%;
+      top: var(--scene-top);
+      bottom: auto;
+    }
+
+    .ground {
+      display: block;
+      position: absolute;
+      inset: calc(var(--scene-top) + var(--u) * 437) 0 0 0;
+      background: var(--ground);
+    }
+
+    .sign-spot {
+      left: 50%;
+      bottom: auto;
+      top: calc(var(--scene-top) + var(--u) * 486);
+    }
+
+    .intro {
+      position: absolute;
+      inset: 96px 0 auto 0;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .tagline {
+      font-size: 24px;
+      letter-spacing: 3px;
+    }
+
+    .wordmark {
+      /* 58px as designed; narrower phones scale it so the 6em word plus shadow fits. */
+      font-size: min(58px, calc((100vw - 40px) / 6.1));
+    }
+
+    .status {
+      gap: 10px;
+      font-size: 13px;
+      letter-spacing: 3px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+    }
+  }
+
+  /* Short phones: shrink the scene and lift the text so the layout still fits. */
+  @media (max-width: 860px) and (max-height: 759px) {
+    .camp {
+      --u: 0.6px;
+      --scene-top: max(64px, min(calc(50% - 150px), calc(100% - 544px)));
+      min-height: 600px;
+    }
+    .intro {
+      top: 56px;
+      gap: 12px;
+    }
+    .wordmark {
+      font-size: min(50px, calc((100vw - 40px) / 6.1));
+    }
+  }
+</style>

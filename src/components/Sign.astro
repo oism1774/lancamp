@@ -1,0 +1,110 @@
+---
+/**
+ * Wooden two-plank sign on posts. Sizes come from the design references:
+ * desktop values scale with --k (1 at 1440px wide), mobile uses fixed sizes.
+ */
+---
+
+<div class="sign">
+  <p class="plank plank-top">COMING SOON<span class="cursor" aria-hidden="true"></span></p>
+  <div class="posts posts-short" aria-hidden="true"><i></i><i></i></div>
+  <p class="plank plank-bottom">pull up a log</p>
+  <div class="posts posts-legs" aria-hidden="true"><i></i><i></i></div>
+</div>
+
+<style>
+  .sign {
+    --gap: calc(var(--k) * 110);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .plank {
+    margin: 0;
+    border: 4px solid var(--wood-dark);
+    color: var(--bone);
+    white-space: nowrap;
+  }
+
+  .plank-top {
+    padding: calc(var(--k) * 16) calc(var(--k) * 24);
+    background: var(--wood);
+    box-shadow: inset 0 -6px 0 rgb(0 0 0 / 0.25), 0 6px 0 var(--ground);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: calc(var(--k) * 26);
+    letter-spacing: calc(var(--k) * 4);
+    text-shadow: 3px 3px 0 #2a160c;
+  }
+
+  .plank-bottom {
+    padding: calc(var(--k) * 6) calc(var(--k) * 16);
+    background: var(--wood-2);
+    box-shadow: inset 0 -6px 0 rgb(0 0 0 / 0.25), 0 6px 0 var(--ground);
+    font-family: var(--font-body);
+    font-size: calc(var(--k) * 26);
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 0.5em;
+    height: 0.9em;
+    margin-left: 0.3em;
+    vertical-align: -0.1em;
+    background: var(--ember);
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  .posts {
+    display: flex;
+    gap: var(--gap);
+  }
+  .posts i {
+    display: block;
+  }
+  .posts-short i {
+    width: calc(var(--k) * 8);
+    height: calc(var(--k) * 16);
+    background: var(--wood-dark);
+  }
+  .posts-legs i {
+    width: calc(var(--k) * 12);
+    height: calc(var(--k) * 104);
+    background: #43281a;
+  }
+
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
+  @media (max-width: 860px) {
+    .sign {
+      --gap: 96px;
+    }
+    .plank-top {
+      padding: 14px 20px;
+      box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.25), 0 5px 0 var(--ground);
+      font-size: 20px;
+      letter-spacing: 3px;
+    }
+    .plank-bottom {
+      padding: 4px 14px;
+      box-shadow: inset 0 -5px 0 rgb(0 0 0 / 0.25), 0 5px 0 var(--ground);
+      font-size: 24px;
+    }
+    .posts-short i {
+      width: 6px;
+      height: 12px;
+    }
+    .posts-legs i {
+      width: 8px;
+      height: 40px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; }
+  }
+</style>
